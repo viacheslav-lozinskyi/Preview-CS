@@ -25,7 +25,7 @@ namespace resource.package
             public const string EXTENSION = ".CS";
             public const string GUID = "42533993-FCE3-42E5-85C5-F339A242EF10";
             public const string NAME = "Preview-CS";
-            public const string VERSION = "1.0.1";
+            public const string VERSION = "1.0.2";
         }
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
