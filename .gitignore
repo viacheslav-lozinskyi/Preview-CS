@@ -1,0 +1,4 @@
+/.vs
+/output
+/application/preview-cs.vs/obj
+/application/preview-cs.vs/*.user
