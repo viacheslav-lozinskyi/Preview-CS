@@ -94,10 +94,6 @@
       <Link>Microsoft.CodeAnalysis.CSharp.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="..\..\output\build\net472\preview-cs.vs\System.Reflection.Metadata.dll">
-      <Link>System.Reflection.Metadata.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -121,128 +121,143 @@ namespace resource.preview
 
         private static void __Execute(ClassDeclarationSyntax node, int level, atom.Trace context, string url)
         {
-            context.
-                SetComment("class").
-                SetHint(HINT.DATA_TYPE).
-                SetLine(__GetLine(node.GetLocation())).
-                SetPosition(__GetPosition(node.GetLocation())).
-                SetUrl(url).
-                Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
-            foreach (var a_Context in node.Members.OfType<ConstructorDeclarationSyntax>())
+            if (__IsEnabled(node))
             {
-                __Execute(a_Context, level + 1, context, url);
-            }
-            foreach (var a_Context in node.Members.OfType<MethodDeclarationSyntax>())
-            {
-                __Execute(a_Context, level + 1, context, url, false);
-            }
-            foreach (var a_Context in node.Members.OfType<PropertyDeclarationSyntax>())
-            {
-                __Execute(a_Context, level + 1, context, url);
-            }
-            foreach (var a_Context in node.Members.OfType<FieldDeclarationSyntax>())
-            {
-                __Execute(a_Context, level + 1, context, url);
+                context.
+                    SetComment("class").
+                    SetHint(HINT.DATA_TYPE).
+                    SetLine(__GetLine(node.GetLocation())).
+                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetUrl(url).
+                    Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
+                foreach (var a_Context in node.Members.OfType<MethodDeclarationSyntax>())
+                {
+                    __Execute(a_Context, level + 1, context, url, false);
+                }
+                foreach (var a_Context in node.Members.OfType<PropertyDeclarationSyntax>())
+                {
+                    __Execute(a_Context, level + 1, context, url);
+                }
+                foreach (var a_Context in node.Members.OfType<FieldDeclarationSyntax>())
+                {
+                    __Execute(a_Context, level + 1, context, url);
+                }
             }
         }
 
         private static void __Execute(EnumDeclarationSyntax node, int level, atom.Trace context, string url)
         {
-            context.
-                SetComment("enum").
-                SetHint(HINT.DATA_TYPE).
-                SetLine(__GetLine(node.GetLocation())).
-                SetPosition(__GetPosition(node.GetLocation())).
-                SetUrl(url).
-                Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
-            foreach (var a_Context in node.Members.OfType<EnumMemberDeclarationSyntax>())
+            if (__IsEnabled(node))
             {
-                __Execute(a_Context, level + 1, context, url);
+                context.
+                    SetComment("enum").
+                    SetHint(HINT.DATA_TYPE).
+                    SetLine(__GetLine(node.GetLocation())).
+                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetUrl(url).
+                    Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
+                foreach (var a_Context in node.Members.OfType<EnumMemberDeclarationSyntax>())
+                {
+                    __Execute(a_Context, level + 1, context, url);
+                }
             }
         }
 
         private static void __Execute(EnumMemberDeclarationSyntax node, int level, atom.Trace context, string url)
         {
-            context.
-                SetComment("int").
-                SetHint(HINT.DATA_TYPE).
-                SetLine(__GetLine(node.GetLocation())).
-                SetPosition(__GetPosition(node.GetLocation())).
-                SetUrl(url).
-                Send(NAME.PATTERN.ELEMENT, level, node.Identifier.ValueText);
+            if (__IsEnabled(node))
+            {
+                context.
+                    SetComment("int").
+                    SetHint(HINT.DATA_TYPE).
+                    SetLine(__GetLine(node.GetLocation())).
+                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetUrl(url).
+                    Send(NAME.PATTERN.ELEMENT, level, node.Identifier.ValueText);
+            }
         }
 
         private static void __Execute(StructDeclarationSyntax node, int level, atom.Trace context, string url)
         {
-            context.
-                SetComment("struct").
-                SetHint(HINT.DATA_TYPE).
-                SetLine(__GetLine(node.GetLocation())).
-                SetPosition(__GetPosition(node.GetLocation())).
-                SetUrl(url).
-                Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
-            foreach (var a_Context in node.Members.OfType<ConstructorDeclarationSyntax>())
+            if (__IsEnabled(node))
             {
-                __Execute(a_Context, level + 1, context, url);
+                context.
+                    SetComment("struct").
+                    SetHint(HINT.DATA_TYPE).
+                    SetLine(__GetLine(node.GetLocation())).
+                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetUrl(url).
+                    Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
+                foreach (var a_Context in node.Members.OfType<MethodDeclarationSyntax>())
+                {
+                    __Execute(a_Context, level + 1, context, url, false);
+                }
+                foreach (var a_Context in node.Members.OfType<PropertyDeclarationSyntax>())
+                {
+                    __Execute(a_Context, level + 1, context, url);
+                }
+                foreach (var a_Context in node.Members.OfType<FieldDeclarationSyntax>())
+                {
+                    __Execute(a_Context, level + 1, context, url);
+                }
             }
-            foreach (var a_Context in node.Members.OfType<MethodDeclarationSyntax>())
-            {
-                __Execute(a_Context, level + 1, context, url, false);
-            }
-            foreach (var a_Context in node.Members.OfType<PropertyDeclarationSyntax>())
-            {
-                __Execute(a_Context, level + 1, context, url);
-            }
-            foreach (var a_Context in node.Members.OfType<FieldDeclarationSyntax>())
-            {
-                __Execute(a_Context, level + 1, context, url);
-            }
-        }
-
-        private static void __Execute(ConstructorDeclarationSyntax node, int level, atom.Trace context, string url)
-        {
-            context.
-                SetComment("<[[Constructor]]>").
-                SetHint(HINT.METHOD_TYPE).
-                SetLine(__GetLine(node.GetLocation())).
-                SetPosition(__GetPosition(node.GetLocation())).
-                SetUrl(url).
-                Send(NAME.PATTERN.FUNCTION, level, __GetName(node, false));
         }
 
         private static void __Execute(MethodDeclarationSyntax node, int level, atom.Trace context, string url, bool isFullName)
         {
-            context.
-                SetComment(node.ReturnType?.ToString()).
-                SetHint(HINT.DATA_TYPE).
-                SetLine(__GetLine(node.GetLocation())).
-                SetPosition(__GetPosition(node.GetLocation())).
-                SetUrl(url).
-                Send(NAME.PATTERN.FUNCTION, level, __GetName(node, isFullName));
+            if (__IsEnabled(node))
+            {
+                context.
+                    SetComment(node.ReturnType?.ToString()).
+                    SetHint(HINT.DATA_TYPE).
+                    SetLine(__GetLine(node.GetLocation())).
+                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetUrl(url).
+                    Send(NAME.PATTERN.FUNCTION, level, __GetName(node, isFullName));
+            }
         }
 
         private static void __Execute(PropertyDeclarationSyntax node, int level, atom.Trace context, string url)
         {
-            context.
-                SetComment(node.Type?.ToString()).
-                SetHint(HINT.DATA_TYPE).
-                SetLine(__GetLine(node.GetLocation())).
-                SetPosition(__GetPosition(node.GetLocation())).
-                SetUrl(url).
-                SetValue(node.Initializer?.Value?.ToString()).
-                Send(NAME.PATTERN.PARAMETER, level, node.Identifier.ValueText);
+            if (__IsEnabled(node))
+            {
+                context.
+                    SetComment(node.Type?.ToString()).
+                    SetHint(HINT.DATA_TYPE).
+                    SetLine(__GetLine(node.GetLocation())).
+                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetUrl(url).
+                    SetValue(node.Initializer?.Value?.ToString()).
+                    Send(NAME.PATTERN.PARAMETER, level, node.Identifier.ValueText);
+            }
         }
 
         private static void __Execute(FieldDeclarationSyntax node, int level, atom.Trace context, string url)
         {
-            context.
-                SetComment(node.Declaration.Type?.ToString()).
-                SetHint(HINT.DATA_TYPE).
-                SetLine(__GetLine(node.GetLocation())).
-                SetPosition(__GetPosition(node.GetLocation())).
-                SetUrl(url).
-                SetValue(node.Declaration.Variables.First()?.Initializer?.Value?.ToString()).
-                Send(NAME.PATTERN.VARIABLE, level, node.Declaration.Variables.First()?.Identifier.ValueText);
+            if (__IsEnabled(node))
+            {
+                context.
+                    SetComment(node.Declaration.Type?.ToString()).
+                    SetHint(HINT.DATA_TYPE).
+                    SetLine(__GetLine(node.GetLocation())).
+                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetUrl(url).
+                    SetValue(node.Declaration.Variables.First()?.Initializer?.Value?.ToString()).
+                    Send(NAME.PATTERN.VARIABLE, level, node.Declaration.Variables.First()?.Identifier.ValueText);
+            }
+        }
+
+        private static bool __IsEnabled(MemberDeclarationSyntax node)
+        {
+            var a_Context = node.Modifiers.ToString();
+            if (string.IsNullOrEmpty(a_Context) == false)
+            {
+                if (a_Context.Contains("private"))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         internal static string __GetArraySize(IEnumerable value)
@@ -290,10 +305,6 @@ namespace resource.preview
                     {
                         a_Result = (a_Context as ClassDeclarationSyntax).Identifier.ValueText;
                     }
-                }
-                if (a_Context is ConstructorDeclarationSyntax)
-                {
-                    a_Result = (a_Context as ConstructorDeclarationSyntax).Identifier.ValueText + __GetParams(a_Context as ConstructorDeclarationSyntax);
                 }
                 if (a_Context is MethodDeclarationSyntax)
                 {
