@@ -7,7 +7,7 @@ class CalRectangle
 {
     class Rectangle
     {
-        protected double length;
+        private double length;
         protected double width;
         public Rectangle(double l, double w)
         {
@@ -18,7 +18,8 @@ class CalRectangle
         {
             return length * width;
         }
-        public void Display()
+
+        private void Display()
         {
             Console.WriteLine("Length: {0}", length);
             Console.WriteLine("Width: {0}", width);
@@ -38,7 +39,7 @@ class CalRectangle
             cost = GetArea() * 70;
             return cost;
         }
-        public void Display()
+        private void Display()
         {
             base.Display();
             Console.WriteLine("Cost: {0}", costcal());

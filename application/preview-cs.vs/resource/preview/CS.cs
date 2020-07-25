@@ -19,6 +19,7 @@ namespace resource.preview
         protected override void _Execute(atom.Trace context, string url)
         {
             var a_Context = CSharpSyntaxTree.ParseText(File.ReadAllText(url)).WithFilePath(url).GetRoot();
+            var a_IsFound = GetProperty(NAME.PROPERTY.DEBUGGING_SHOW_PRIVATE) != 0;
             {
                 context.
                     SetFlag(NAME.FLAG.EXPAND).
@@ -52,7 +53,7 @@ namespace resource.preview
                     Send(NAME.PATTERN.FOLDER, 1, "[[Classes]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<ClassDeclarationSyntax>())
                 {
-                    __Execute(a_Context1, 2, context, url);
+                    __Execute(a_Context1, 2, context, url, a_IsFound);
                 }
             }
             if (a_Context.DescendantNodes().OfType<StructDeclarationSyntax>().Any())
@@ -62,7 +63,7 @@ namespace resource.preview
                     Send(NAME.PATTERN.FOLDER, 1, "[[Structs]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<StructDeclarationSyntax>())
                 {
-                    __Execute(a_Context1, 2, context, url);
+                    __Execute(a_Context1, 2, context, url, a_IsFound);
                 }
             }
             if (a_Context.DescendantNodes().OfType<EnumDeclarationSyntax>().Any())
@@ -72,7 +73,7 @@ namespace resource.preview
                     Send(NAME.PATTERN.FOLDER, 1, "[[Enums]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<EnumDeclarationSyntax>())
                 {
-                    __Execute(a_Context1, 2, context, url);
+                    __Execute(a_Context1, 2, context, url, a_IsFound);
                 }
             }
             if (a_Context.DescendantNodes().OfType<MethodDeclarationSyntax>().Any())
@@ -82,7 +83,7 @@ namespace resource.preview
                     Send(NAME.PATTERN.FOLDER, 1, "[[Functions]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<MethodDeclarationSyntax>())
                 {
-                    __Execute(a_Context1, 2, context, url, true);
+                    __Execute(a_Context1, 2, context, url, true, a_IsFound);
                 }
             }
             if (a_Context.GetDiagnostics().Any())
@@ -94,6 +95,11 @@ namespace resource.preview
                 {
                     __Execute(a_Context1, 2, context, url);
                 }
+            }
+            if (GetState() == STATE.CANCEL)
+            {
+                context.
+                    SendWarning(1, NAME.WARNING.TERMINATED);
             }
         }
 
@@ -119,12 +125,12 @@ namespace resource.preview
                 Send(NAME.PATTERN.ELEMENT, level, node.Name.ToString());
         }
 
-        private static void __Execute(ClassDeclarationSyntax node, int level, atom.Trace context, string url)
+        private static void __Execute(ClassDeclarationSyntax node, int level, atom.Trace context, string url, bool isShowPrivate)
         {
-            if (__IsEnabled(node))
+            if (__IsEnabled(node, isShowPrivate))
             {
                 context.
-                    SetComment("class").
+                    SetComment(__GetType(node, "class")).
                     SetHint(HINT.DATA_TYPE).
                     SetLine(__GetLine(node.GetLocation())).
                     SetPosition(__GetPosition(node.GetLocation())).
@@ -132,25 +138,25 @@ namespace resource.preview
                     Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
                 foreach (var a_Context in node.Members.OfType<MethodDeclarationSyntax>())
                 {
-                    __Execute(a_Context, level + 1, context, url, false);
+                    __Execute(a_Context, level + 1, context, url, false, isShowPrivate);
                 }
                 foreach (var a_Context in node.Members.OfType<PropertyDeclarationSyntax>())
                 {
-                    __Execute(a_Context, level + 1, context, url);
+                    __Execute(a_Context, level + 1, context, url, isShowPrivate);
                 }
                 foreach (var a_Context in node.Members.OfType<FieldDeclarationSyntax>())
                 {
-                    __Execute(a_Context, level + 1, context, url);
+                    __Execute(a_Context, level + 1, context, url, isShowPrivate);
                 }
             }
         }
 
-        private static void __Execute(EnumDeclarationSyntax node, int level, atom.Trace context, string url)
+        private static void __Execute(EnumDeclarationSyntax node, int level, atom.Trace context, string url, bool isShowPrivate)
         {
-            if (__IsEnabled(node))
+            if (__IsEnabled(node, isShowPrivate))
             {
                 context.
-                    SetComment("enum").
+                    SetComment(__GetType(node, "enum")).
                     SetHint(HINT.DATA_TYPE).
                     SetLine(__GetLine(node.GetLocation())).
                     SetPosition(__GetPosition(node.GetLocation())).
@@ -158,17 +164,17 @@ namespace resource.preview
                     Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
                 foreach (var a_Context in node.Members.OfType<EnumMemberDeclarationSyntax>())
                 {
-                    __Execute(a_Context, level + 1, context, url);
+                    __Execute(a_Context, level + 1, context, url, isShowPrivate);
                 }
             }
         }
 
-        private static void __Execute(EnumMemberDeclarationSyntax node, int level, atom.Trace context, string url)
+        private static void __Execute(EnumMemberDeclarationSyntax node, int level, atom.Trace context, string url, bool isShowPrivate)
         {
-            if (__IsEnabled(node))
+            if (__IsEnabled(node, isShowPrivate))
             {
                 context.
-                    SetComment("int").
+                    SetComment(__GetType(node, "int")).
                     SetHint(HINT.DATA_TYPE).
                     SetLine(__GetLine(node.GetLocation())).
                     SetPosition(__GetPosition(node.GetLocation())).
@@ -177,12 +183,12 @@ namespace resource.preview
             }
         }
 
-        private static void __Execute(StructDeclarationSyntax node, int level, atom.Trace context, string url)
+        private static void __Execute(StructDeclarationSyntax node, int level, atom.Trace context, string url, bool isShowPrivate)
         {
-            if (__IsEnabled(node))
+            if (__IsEnabled(node, isShowPrivate))
             {
                 context.
-                    SetComment("struct").
+                    SetComment(__GetType(node, "struct")).
                     SetHint(HINT.DATA_TYPE).
                     SetLine(__GetLine(node.GetLocation())).
                     SetPosition(__GetPosition(node.GetLocation())).
@@ -190,25 +196,25 @@ namespace resource.preview
                     Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
                 foreach (var a_Context in node.Members.OfType<MethodDeclarationSyntax>())
                 {
-                    __Execute(a_Context, level + 1, context, url, false);
+                    __Execute(a_Context, level + 1, context, url, false, isShowPrivate);
                 }
                 foreach (var a_Context in node.Members.OfType<PropertyDeclarationSyntax>())
                 {
-                    __Execute(a_Context, level + 1, context, url);
+                    __Execute(a_Context, level + 1, context, url, isShowPrivate);
                 }
                 foreach (var a_Context in node.Members.OfType<FieldDeclarationSyntax>())
                 {
-                    __Execute(a_Context, level + 1, context, url);
+                    __Execute(a_Context, level + 1, context, url, isShowPrivate);
                 }
             }
         }
 
-        private static void __Execute(MethodDeclarationSyntax node, int level, atom.Trace context, string url, bool isFullName)
+        private static void __Execute(MethodDeclarationSyntax node, int level, atom.Trace context, string url, bool isFullName, bool isShowPrivate)
         {
-            if (__IsEnabled(node))
+            if (__IsEnabled(node, isShowPrivate))
             {
                 context.
-                    SetComment(node.ReturnType?.ToString()).
+                    SetComment(__GetType(node, node.ReturnType?.ToString())).
                     SetHint(HINT.DATA_TYPE).
                     SetLine(__GetLine(node.GetLocation())).
                     SetPosition(__GetPosition(node.GetLocation())).
@@ -217,12 +223,12 @@ namespace resource.preview
             }
         }
 
-        private static void __Execute(PropertyDeclarationSyntax node, int level, atom.Trace context, string url)
+        private static void __Execute(PropertyDeclarationSyntax node, int level, atom.Trace context, string url, bool isShowPrivate)
         {
-            if (__IsEnabled(node))
+            if (__IsEnabled(node, isShowPrivate))
             {
                 context.
-                    SetComment(node.Type?.ToString()).
+                    SetComment(__GetType(node, node.Type?.ToString())).
                     SetHint(HINT.DATA_TYPE).
                     SetLine(__GetLine(node.GetLocation())).
                     SetPosition(__GetPosition(node.GetLocation())).
@@ -232,12 +238,12 @@ namespace resource.preview
             }
         }
 
-        private static void __Execute(FieldDeclarationSyntax node, int level, atom.Trace context, string url)
+        private static void __Execute(FieldDeclarationSyntax node, int level, atom.Trace context, string url, bool isShowPrivate)
         {
-            if (__IsEnabled(node))
+            if (__IsEnabled(node, isShowPrivate))
             {
                 context.
-                    SetComment(node.Declaration.Type?.ToString()).
+                    SetComment(__GetType(node, node.Declaration.Type?.ToString())).
                     SetHint(HINT.DATA_TYPE).
                     SetLine(__GetLine(node.GetLocation())).
                     SetPosition(__GetPosition(node.GetLocation())).
@@ -247,17 +253,33 @@ namespace resource.preview
             }
         }
 
-        private static bool __IsEnabled(MemberDeclarationSyntax node)
+        private static bool __IsEnabled(MemberDeclarationSyntax node, bool isShowPrivate)
         {
-            var a_Context = node.Modifiers.ToString();
-            if (string.IsNullOrEmpty(a_Context) == false)
+            if (GetState() == STATE.CANCEL)
             {
-                if (a_Context.Contains("private"))
+                return false;
+            }
+            if (isShowPrivate == false)
+            {
+                var a_Context = node.Modifiers.ToString();
+                if (string.IsNullOrEmpty(a_Context) == false)
                 {
-                    return false;
+                    if (a_Context.Contains("private"))
+                    {
+                        return false;
+                    }
                 }
             }
             return true;
+        }
+
+        private static string __GetType(MemberDeclarationSyntax node, string typeName)
+        {
+            if (node.Modifiers != null)
+            {
+                return node.Modifiers.ToString().Trim() + " " + typeName;
+            }    
+            return typeName;
         }
 
         internal static string __GetArraySize(IEnumerable value)
@@ -279,7 +301,7 @@ namespace resource.preview
                 case DiagnosticSeverity.Warning: return NAME.FLAG.WARNING;
                 case DiagnosticSeverity.Error: return NAME.FLAG.ERROR;
             }
-            return "";
+            return NAME.FLAG.NONE;
         }
 
         private static string __GetName(SyntaxNode node, bool isFullName)
