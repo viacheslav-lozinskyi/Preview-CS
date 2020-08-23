@@ -20,9 +20,15 @@ namespace resource.preview
         {
             var a_Context = CSharpSyntaxTree.ParseText(File.ReadAllText(url)).WithFilePath(url).GetRoot();
             var a_IsFound = GetProperty(NAME.PROPERTY.DEBUGGING_SHOW_PRIVATE) != 0;
+            if (a_Context == null)
+            {
+                return;
+            }
+            else
             {
                 context.
-                    SetFlag(NAME.FLAG.EXPAND).
+                    SetState(NAME.STATE.HEADER).
+                    SetState(NAME.STATE.EXPAND).
                     Send(NAME.PATTERN.FOLDER, 1, "[[Info]]");
                 {
                     context.
@@ -106,9 +112,9 @@ namespace resource.preview
         private static void __Execute(Diagnostic node, int level, atom.Trace context, string url)
         {
             context.
-                SetFlag(__GetFlag(node)).
-                SetLine(__GetLine(node.Location)).
-                SetPosition(__GetPosition(node.Location)).
+                SetState(__GetFlag(node)).
+                SetUrlLine(__GetLine(node.Location)).
+                SetUrlPosition(__GetPosition(node.Location)).
                 SetUrl(url).
                 SetLink("https://www.bing.com/search?q=" + node.Id).
                 Send(NAME.PATTERN.ELEMENT, level, node.Descriptor.MessageFormat.ToString());
@@ -118,9 +124,9 @@ namespace resource.preview
         {
             context.
                 SetComment("using").
-                SetHint(HINT.DATA_TYPE).
-                SetLine(__GetLine(node.GetLocation())).
-                SetPosition(__GetPosition(node.GetLocation())).
+                SetCommentHint(HINT.DATA_TYPE).
+                SetUrlLine(__GetLine(node.GetLocation())).
+                SetUrlPosition(__GetPosition(node.GetLocation())).
                 SetUrl(url).
                 Send(NAME.PATTERN.ELEMENT, level, node.Name.ToString());
         }
@@ -131,9 +137,9 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetType(node, "class")).
-                    SetHint(HINT.DATA_TYPE).
-                    SetLine(__GetLine(node.GetLocation())).
-                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetCommentHint(HINT.DATA_TYPE).
+                    SetUrlLine(__GetLine(node.GetLocation())).
+                    SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
                     Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
                 foreach (var a_Context in node.Members.OfType<MethodDeclarationSyntax>())
@@ -157,9 +163,9 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetType(node, "enum")).
-                    SetHint(HINT.DATA_TYPE).
-                    SetLine(__GetLine(node.GetLocation())).
-                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetCommentHint(HINT.DATA_TYPE).
+                    SetUrlLine(__GetLine(node.GetLocation())).
+                    SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
                     Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
                 foreach (var a_Context in node.Members.OfType<EnumMemberDeclarationSyntax>())
@@ -175,9 +181,9 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetType(node, "int")).
-                    SetHint(HINT.DATA_TYPE).
-                    SetLine(__GetLine(node.GetLocation())).
-                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetCommentHint(HINT.DATA_TYPE).
+                    SetUrlLine(__GetLine(node.GetLocation())).
+                    SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
                     Send(NAME.PATTERN.ELEMENT, level, node.Identifier.ValueText);
             }
@@ -189,9 +195,9 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetType(node, "struct")).
-                    SetHint(HINT.DATA_TYPE).
-                    SetLine(__GetLine(node.GetLocation())).
-                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetCommentHint(HINT.DATA_TYPE).
+                    SetUrlLine(__GetLine(node.GetLocation())).
+                    SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
                     Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
                 foreach (var a_Context in node.Members.OfType<MethodDeclarationSyntax>())
@@ -215,9 +221,9 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetType(node, node.ReturnType?.ToString())).
-                    SetHint(HINT.DATA_TYPE).
-                    SetLine(__GetLine(node.GetLocation())).
-                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetCommentHint(HINT.DATA_TYPE).
+                    SetUrlLine(__GetLine(node.GetLocation())).
+                    SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
                     Send(NAME.PATTERN.FUNCTION, level, __GetName(node, isFullName));
             }
@@ -229,9 +235,9 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetType(node, node.Type?.ToString())).
-                    SetHint(HINT.DATA_TYPE).
-                    SetLine(__GetLine(node.GetLocation())).
-                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetCommentHint(HINT.DATA_TYPE).
+                    SetUrlLine(__GetLine(node.GetLocation())).
+                    SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
                     SetValue(node.Initializer?.Value?.ToString()).
                     Send(NAME.PATTERN.PARAMETER, level, node.Identifier.ValueText);
@@ -244,9 +250,9 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetType(node, node.Declaration.Type?.ToString())).
-                    SetHint(HINT.DATA_TYPE).
-                    SetLine(__GetLine(node.GetLocation())).
-                    SetPosition(__GetPosition(node.GetLocation())).
+                    SetCommentHint(HINT.DATA_TYPE).
+                    SetUrlLine(__GetLine(node.GetLocation())).
+                    SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
                     SetValue(node.Declaration.Variables.First()?.Initializer?.Value?.ToString()).
                     Send(NAME.PATTERN.VARIABLE, level, node.Declaration.Variables.First()?.Identifier.ValueText);
@@ -296,12 +302,12 @@ namespace resource.preview
         {
             switch (node.Severity)
             {
-                case DiagnosticSeverity.Hidden: return NAME.FLAG.DEBUG;
-                case DiagnosticSeverity.Info: return NAME.FLAG.NONE;
-                case DiagnosticSeverity.Warning: return NAME.FLAG.WARNING;
-                case DiagnosticSeverity.Error: return NAME.FLAG.ERROR;
+                case DiagnosticSeverity.Hidden: return NAME.STATE.DEBUG;
+                case DiagnosticSeverity.Info: return NAME.STATE.NONE;
+                case DiagnosticSeverity.Warning: return NAME.STATE.WARNING;
+                case DiagnosticSeverity.Error: return NAME.STATE.ERROR;
             }
-            return NAME.FLAG.NONE;
+            return NAME.STATE.NONE;
         }
 
         private static string __GetName(SyntaxNode node, bool isFullName)
