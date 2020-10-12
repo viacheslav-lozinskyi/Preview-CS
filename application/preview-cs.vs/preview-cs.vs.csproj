@@ -68,7 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MetaPreview">
-      <Version>1.1.0</Version>
+      <Version>1.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp">
       <Version>3.7.0</Version>
@@ -92,6 +92,14 @@
     </Content>
     <Content Include="..\..\output\build\net472\preview-cs.vs\Microsoft.CodeAnalysis.CSharp.dll">
       <Link>Microsoft.CodeAnalysis.CSharp.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\output\build\net472\preview-cs.vs\System.Collections.Immutable.dll">
+      <Link>System.Collections.Immutable.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\output\build\net472\preview-cs.vs\System.Reflection.Metadata.dll">
+      <Link>System.Reflection.Metadata.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
