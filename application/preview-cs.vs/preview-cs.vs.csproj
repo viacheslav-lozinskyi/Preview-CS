@@ -102,6 +102,15 @@
       <Link>System.Reflection.Metadata.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="..\..\resource\sample\Sample1.cs">
+      <Link>resource\sample\Sample1.cs</Link>
+    </Content>
+    <Content Include="..\..\resource\sample\Sample2.cs">
+      <Link>resource\sample\Sample2.cs</Link>
+    </Content>
+    <Content Include="..\..\resource\sample\Sample3.cs">
+      <Link>resource\sample\Sample3.cs</Link>
+    </Content>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
