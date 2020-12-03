@@ -19,16 +19,16 @@ namespace resource.package
             public const string COPYRIGHT = "Copyright (c) 2020 by Viacheslav Lozinskyi. All rights reserved.";
             public const string DESCRIPTION = "Quick preview of CS files";
             public const string EXTENSION = ".CS";
-            public const string GUID = "42533993-FCE3-42E5-85C5-F339A242EF10";
+            public const string GUID = "5F8DF008-CD59-49F9-91C1-7A6FD770FDF2";
             public const string NAME = "Preview-CS";
-            public const string VERSION = "1.0.6";
+            public const string VERSION = "1.0.7";
         }
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             {
                 cartridge.AnyPreview.Connect();
-                cartridge.AnyPreview.Register(cartridge.AnyPreview.MODE.PREVIEW, CONSTANT.EXTENSION, new preview.CS());
+                cartridge.AnyPreview.Register(cartridge.AnyPreview.MODE.PREVIEW, CONSTANT.EXTENSION, new preview.VSPreview());
             }
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);

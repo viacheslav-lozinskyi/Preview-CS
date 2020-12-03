@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace resource.preview
 {
-    public class CS : cartridge.AnyPreview
+    internal class VSPreview : cartridge.AnyPreview
     {
         internal class HINT
         {
@@ -28,25 +28,24 @@ namespace resource.preview
             {
                 context.
                     SetState(NAME.STATE.HEADER).
-                    SetState(NAME.STATE.EXPAND).
-                    Send(NAME.PATTERN.FOLDER, 1, "[[Info]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FOLDER, 1, "[[Info]]");
                 {
                     context.
                         SetValue(url).
-                        Send(NAME.PATTERN.VARIABLE, 2, "[[File name]]");
+                        Send(NAME.SOURCE.PREVIEW, NAME.TYPE.VARIABLE, 2, "[[File Name]]");
                     context.
                         SetValue(a_Context.GetText().Length.ToString()).
-                        Send(NAME.PATTERN.VARIABLE, 2, "[[File size]]");
+                        Send(NAME.SOURCE.PREVIEW, NAME.TYPE.VARIABLE, 2, "[[File Size]]");
                     context.
                         SetValue(a_Context.Language).
-                        Send(NAME.PATTERN.VARIABLE, 2, "[[Language]]");
+                        Send(NAME.SOURCE.PREVIEW, NAME.TYPE.VARIABLE, 2, "[[Language]]");
                 }
             }
             if (a_Context.DescendantNodes().OfType<UsingDirectiveSyntax>().Any())
             {
                 context.
                     SetComment(__GetArraySize(a_Context.DescendantNodes().OfType<UsingDirectiveSyntax>())).
-                    Send(NAME.PATTERN.FOLDER, 1, "[[Dependencies]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FOLDER, 1, "[[Dependencies]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<UsingDirectiveSyntax>())
                 {
                     __Execute(a_Context1, 2, context, url);
@@ -56,7 +55,7 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetArraySize(a_Context.DescendantNodes().OfType<ClassDeclarationSyntax>())).
-                    Send(NAME.PATTERN.FOLDER, 1, "[[Classes]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FOLDER, 1, "[[Classes]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<ClassDeclarationSyntax>())
                 {
                     __Execute(a_Context1, 2, context, url, a_IsFound);
@@ -66,7 +65,7 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetArraySize(a_Context.DescendantNodes().OfType<StructDeclarationSyntax>())).
-                    Send(NAME.PATTERN.FOLDER, 1, "[[Structs]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FOLDER, 1, "[[Structs]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<StructDeclarationSyntax>())
                 {
                     __Execute(a_Context1, 2, context, url, a_IsFound);
@@ -76,7 +75,7 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetArraySize(a_Context.DescendantNodes().OfType<EnumDeclarationSyntax>())).
-                    Send(NAME.PATTERN.FOLDER, 1, "[[Enums]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FOLDER, 1, "[[Enums]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<EnumDeclarationSyntax>())
                 {
                     __Execute(a_Context1, 2, context, url, a_IsFound);
@@ -86,7 +85,7 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetArraySize(a_Context.DescendantNodes().OfType<MethodDeclarationSyntax>())).
-                    Send(NAME.PATTERN.FOLDER, 1, "[[Functions]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FOLDER, 1, "[[Functions]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<MethodDeclarationSyntax>())
                 {
                     __Execute(a_Context1, 2, context, url, true, a_IsFound);
@@ -95,8 +94,9 @@ namespace resource.preview
             if (a_Context.GetDiagnostics().Any())
             {
                 context.
+                    SetState(NAME.STATE.FOOTER).
                     SetComment(__GetArraySize(a_Context.GetDiagnostics())).
-                    Send(NAME.PATTERN.FOLDER, 1, "[[Diagnostics]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.ERROR, 1, "[[Diagnostics]]");
                 foreach (var a_Context1 in a_Context.GetDiagnostics())
                 {
                     __Execute(a_Context1, 2, context, url);
@@ -112,12 +112,12 @@ namespace resource.preview
         private static void __Execute(Diagnostic node, int level, atom.Trace context, string url)
         {
             context.
-                SetState(__GetFlag(node)).
+                SetState(__GetSeverity(node)).
                 SetUrlLine(__GetLine(node.Location)).
                 SetUrlPosition(__GetPosition(node.Location)).
                 SetUrl(url).
                 SetLink("https://www.bing.com/search?q=" + node.Id).
-                Send(NAME.PATTERN.ELEMENT, level, node.Descriptor.MessageFormat.ToString());
+                Send(NAME.SOURCE.PREVIEW, NAME.TYPE.INFO, level, node.Descriptor.MessageFormat.ToString());
         }
 
         private static void __Execute(UsingDirectiveSyntax node, int level, atom.Trace context, string url)
@@ -128,7 +128,7 @@ namespace resource.preview
                 SetUrlLine(__GetLine(node.GetLocation())).
                 SetUrlPosition(__GetPosition(node.GetLocation())).
                 SetUrl(url).
-                Send(NAME.PATTERN.ELEMENT, level, node.Name.ToString());
+                Send(NAME.SOURCE.PREVIEW, NAME.TYPE.INFO, level, node.Name.ToString());
         }
 
         private static void __Execute(ClassDeclarationSyntax node, int level, atom.Trace context, string url, bool isShowPrivate)
@@ -141,7 +141,7 @@ namespace resource.preview
                     SetUrlLine(__GetLine(node.GetLocation())).
                     SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
-                    Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.CLASS, level, __GetName(node, true));
                 foreach (var a_Context in node.Members.OfType<MethodDeclarationSyntax>())
                 {
                     __Execute(a_Context, level + 1, context, url, false, isShowPrivate);
@@ -167,7 +167,7 @@ namespace resource.preview
                     SetUrlLine(__GetLine(node.GetLocation())).
                     SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
-                    Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.CLASS, level, __GetName(node, true));
                 foreach (var a_Context in node.Members.OfType<EnumMemberDeclarationSyntax>())
                 {
                     __Execute(a_Context, level + 1, context, url, isShowPrivate);
@@ -185,7 +185,7 @@ namespace resource.preview
                     SetUrlLine(__GetLine(node.GetLocation())).
                     SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
-                    Send(NAME.PATTERN.ELEMENT, level, node.Identifier.ValueText);
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.INFO, level, node.Identifier.ValueText);
             }
         }
 
@@ -199,7 +199,7 @@ namespace resource.preview
                     SetUrlLine(__GetLine(node.GetLocation())).
                     SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
-                    Send(NAME.PATTERN.CLASS, level, __GetName(node, true));
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.CLASS, level, __GetName(node, true));
                 foreach (var a_Context in node.Members.OfType<MethodDeclarationSyntax>())
                 {
                     __Execute(a_Context, level + 1, context, url, false, isShowPrivate);
@@ -225,7 +225,7 @@ namespace resource.preview
                     SetUrlLine(__GetLine(node.GetLocation())).
                     SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
-                    Send(NAME.PATTERN.FUNCTION, level, __GetName(node, isFullName));
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FUNCTION, level, __GetName(node, isFullName));
             }
         }
 
@@ -240,7 +240,7 @@ namespace resource.preview
                     SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
                     SetValue(node.Initializer?.Value?.ToString()).
-                    Send(NAME.PATTERN.PARAMETER, level, node.Identifier.ValueText);
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.PARAMETER, level, node.Identifier.ValueText);
             }
         }
 
@@ -255,7 +255,7 @@ namespace resource.preview
                     SetUrlPosition(__GetPosition(node.GetLocation())).
                     SetUrl(url).
                     SetValue(node.Declaration.Variables.First()?.Initializer?.Value?.ToString()).
-                    Send(NAME.PATTERN.VARIABLE, level, node.Declaration.Variables.First()?.Identifier.ValueText);
+                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.VARIABLE, level, node.Declaration.Variables.First()?.Identifier.ValueText);
             }
         }
 
@@ -298,16 +298,16 @@ namespace resource.preview
             return "[[Found]]: " + a_Result.ToString();
         }
 
-        private static string __GetFlag(Diagnostic node)
+        private static string __GetSeverity(Diagnostic node)
         {
             switch (node.Severity)
             {
-                case DiagnosticSeverity.Hidden: return NAME.STATE.DEBUG;
-                case DiagnosticSeverity.Info: return NAME.STATE.NONE;
-                case DiagnosticSeverity.Warning: return NAME.STATE.WARNING;
-                case DiagnosticSeverity.Error: return NAME.STATE.ERROR;
+                case DiagnosticSeverity.Hidden: return NAME.TYPE.DEBUG;
+                case DiagnosticSeverity.Info: return NAME.TYPE.INFO;
+                case DiagnosticSeverity.Warning: return NAME.TYPE.WARNING;
+                case DiagnosticSeverity.Error: return NAME.TYPE.ERROR;
             }
-            return NAME.STATE.NONE;
+            return NAME.TYPE.INFO;
         }
 
         private static string __GetName(SyntaxNode node, bool isFullName)
