@@ -2,14 +2,14 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle(resource.package.PreviewCSPackage.CONSTANT.NAME)]
-[assembly: AssemblyDescription(resource.package.PreviewCSPackage.CONSTANT.DESCRIPTION)]
+[assembly: AssemblyTitle(resource.package.PreviewCS.CONSTANT.NAME)]
+[assembly: AssemblyDescription(resource.package.PreviewCS.CONSTANT.DESCRIPTION)]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct(resource.package.PreviewCSPackage.CONSTANT.NAME)]
-[assembly: AssemblyCopyright(resource.package.PreviewCSPackage.CONSTANT.COPYRIGHT)]
+[assembly: AssemblyProduct(resource.package.PreviewCS.CONSTANT.NAME)]
+[assembly: AssemblyCopyright(resource.package.PreviewCS.CONSTANT.COPYRIGHT)]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion(resource.package.PreviewCSPackage.CONSTANT.VERSION)]
-[assembly: AssemblyFileVersion(resource.package.PreviewCSPackage.CONSTANT.VERSION)]
+[assembly: AssemblyVersion(resource.package.PreviewCS.CONSTANT.VERSION)]
+[assembly: AssemblyFileVersion(resource.package.PreviewCS.CONSTANT.VERSION)]
