@@ -8,6 +8,12 @@
 
 ---
 
+[![MetaOutput](https://www.metaoutput.net/_functions/watch?source=GITHUB&size=128x128&project=Preview-CS&url=https://marketplace.visualstudio.com/items?itemName=ViacheslavLozinskyi.Preview-CS)](https://www.metaoutput.net/?utm_source=github.com&utm_medium=referral&utm_campaign=redirect-to-homepage&utm_term=2021-11-21&utm_content=Preview-CS)
+
+### This extension is working only with installed [MetaOutput](https://www.metaoutput.net/?utm_source=github.com&utm_medium=referral&utm_campaign=redirect-to-homepage&utm_term=2021-11-21&utm_content=Preview-CS) extension!
+
+---
+
 ### Now you can look inside [CS](https://ru.wikipedia.org/wiki/C_Sharp) source files not opening it.
 
 ---
@@ -16,16 +22,6 @@
 
 ---
 
-Download the extension from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ViacheslavLozinskyi.Preview-CS)
-
----
-
-Data visualization is based on [MetaOutput](https://www.metaoutput.net/?utm_source=github.com&utm_medium=referral&utm_campaign=redirect-to-homepage&utm_term=2021-11-21&utm_content=preview-cs)
+Data visualization is based on [MetaOutput](https://www.metaoutput.net/?utm_source=github.com&utm_medium=referral&utm_campaign=redirect-to-homepage&utm_term=2021-11-21&utm_content=Preview-CS)
 
 Data extraction is based on [.NET Compiler Platform](https://github.com/dotnet/roslyn)
-
----
-
-## WARNING:
-
-Correct work of this extension in **Visual Studio 2022** is possible when **[MetaOutput 2022](https://marketplace.visualstudio.com/items?itemName=ViacheslavLozinskyi.MetaOutput-2022)** extension is installed.
