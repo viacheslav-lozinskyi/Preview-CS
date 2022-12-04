@@ -25,18 +25,18 @@ namespace resource.preview
             }
             else
             {
-                context.Send(NAME.SOURCE.PREVIEW, NAME.TYPE.HEADER, level, "[[[Info]]]");
+                context.Send(NAME.SOURCE.PREVIEW, NAME.EVENT.HEADER, level, "[[[Info]]]");
                 {
-                    context.Send(NAME.SOURCE.PREVIEW, NAME.TYPE.PARAMETER, level + 1, "[[[File Name]]]", url);
-                    context.Send(NAME.SOURCE.PREVIEW, NAME.TYPE.PARAMETER, level + 1, "[[[File Size]]]", a_Context.GetText().Length.ToString());
-                    context.Send(NAME.SOURCE.PREVIEW, NAME.TYPE.PARAMETER, level + 1, "[[[Language]]]", a_Context.Language);
+                    context.Send(NAME.SOURCE.PREVIEW, NAME.EVENT.PARAMETER, level + 1, "[[[File Name]]]", url);
+                    context.Send(NAME.SOURCE.PREVIEW, NAME.EVENT.PARAMETER, level + 1, "[[[File Size]]]", a_Context.GetText().Length.ToString());
+                    context.Send(NAME.SOURCE.PREVIEW, NAME.EVENT.PARAMETER, level + 1, "[[[Language]]]", a_Context.Language);
                 }
             }
             if (a_Context.DescendantNodes().OfType<UsingDirectiveSyntax>().Any())
             {
                 context.
                     SetComment(__GetArraySize(a_Context.DescendantNodes().OfType<UsingDirectiveSyntax>())).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FOLDER, level, "[[[Dependencies]]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.FOLDER, level, "[[[Dependencies]]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<UsingDirectiveSyntax>())
                 {
                     __Execute(context, level + 1, a_Context1, file);
@@ -46,7 +46,7 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetArraySize(a_Context.DescendantNodes().OfType<ClassDeclarationSyntax>())).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FOLDER, level, "[[[Classes]]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.FOLDER, level, "[[[Classes]]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<ClassDeclarationSyntax>())
                 {
                     __Execute(context, level + 1, a_Context1, file, a_IsFound);
@@ -56,7 +56,7 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetArraySize(a_Context.DescendantNodes().OfType<StructDeclarationSyntax>())).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FOLDER, level, "[[[Structs]]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.FOLDER, level, "[[[Structs]]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<StructDeclarationSyntax>())
                 {
                     __Execute(context, level + 1, a_Context1, file, a_IsFound);
@@ -66,7 +66,7 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetArraySize(a_Context.DescendantNodes().OfType<EnumDeclarationSyntax>())).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FOLDER, level, "[[[Enums]]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.FOLDER, level, "[[[Enums]]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<EnumDeclarationSyntax>())
                 {
                     __Execute(context, level + 1, a_Context1, file, a_IsFound);
@@ -76,7 +76,7 @@ namespace resource.preview
             {
                 context.
                     SetComment(__GetArraySize(a_Context.DescendantNodes().OfType<MethodDeclarationSyntax>())).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FOLDER, level, "[[[Functions]]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.FOLDER, level, "[[[Functions]]]");
                 foreach (var a_Context1 in a_Context.DescendantNodes().OfType<MethodDeclarationSyntax>())
                 {
                     __Execute(context, level + 1, a_Context1, file, true, a_IsFound);
@@ -85,9 +85,9 @@ namespace resource.preview
             if (a_Context.GetDiagnostics().Any())
             {
                 context.
-                    SendPreview(NAME.TYPE.ERROR, url).
+                    SendPreview(NAME.EVENT.ERROR, url).
                     SetComment(__GetArraySize(a_Context.GetDiagnostics())).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.ERROR, level, "[[[Diagnostics]]]");
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.ERROR, level, "[[[Diagnostics]]]");
                 foreach (var a_Context1 in a_Context.GetDiagnostics())
                 {
                     __Execute(context, level + 1, a_Context1, file);
@@ -108,7 +108,7 @@ namespace resource.preview
             context.
                 SetComment("using", HINT.DATA_TYPE).
                 SetUrl(file, __GetLine(data.GetLocation()), __GetPosition(data.GetLocation())).
-                Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FILE, level, data.Name.ToString());
+                Send(NAME.SOURCE.PREVIEW, NAME.EVENT.FILE, level, data.Name.ToString());
         }
 
         private static void __Execute(atom.Trace context, int level, ClassDeclarationSyntax data, string file, bool isShowPrivate)
@@ -118,7 +118,7 @@ namespace resource.preview
                 context.
                     SetComment(__GetType(data, "class"), HINT.DATA_TYPE).
                     SetUrl(file, __GetLine(data.GetLocation()), __GetPosition(data.GetLocation())).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.CLASS, level, __GetName(data, true));
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.CLASS, level, __GetName(data, true));
                 foreach (var a_Context in data.Members.OfType<MethodDeclarationSyntax>())
                 {
                     __Execute(context, level + 1, a_Context, file, false, isShowPrivate);
@@ -141,7 +141,7 @@ namespace resource.preview
                 context.
                     SetComment(__GetType(data, "enum"), HINT.DATA_TYPE).
                     SetUrl(file, __GetLine(data.GetLocation()), __GetPosition(data.GetLocation())).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.CLASS, level, __GetName(data, true));
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.CLASS, level, __GetName(data, true));
                 foreach (var a_Context in data.Members.OfType<EnumMemberDeclarationSyntax>())
                 {
                     __Execute(context, level + 1, a_Context, file, isShowPrivate);
@@ -156,7 +156,7 @@ namespace resource.preview
                 context.
                     SetComment(__GetType(data, "int"), HINT.DATA_TYPE).
                     SetUrl(file, __GetLine(data.GetLocation()), __GetPosition(data.GetLocation())).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.PARAMETER, level, data.Identifier.ValueText);
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.PARAMETER, level, data.Identifier.ValueText);
             }
         }
 
@@ -167,7 +167,7 @@ namespace resource.preview
                 context.
                     SetComment(__GetType(data, "struct"), HINT.DATA_TYPE).
                     SetUrl(file, __GetLine(data.GetLocation()), __GetPosition(data.GetLocation())).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.CLASS, level, __GetName(data, true));
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.CLASS, level, __GetName(data, true));
                 foreach (var a_Context in data.Members.OfType<MethodDeclarationSyntax>())
                 {
                     __Execute(context, level + 1, a_Context, file, false, isShowPrivate);
@@ -190,7 +190,7 @@ namespace resource.preview
                 context.
                     SetComment(__GetType(data, data.ReturnType?.ToString()), HINT.DATA_TYPE).
                     SetUrl(file, __GetLine(data.GetLocation()), __GetPosition(data.GetLocation())).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.FUNCTION, level, __GetName(data, isFullName));
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.FUNCTION, level, __GetName(data, isFullName));
             }
         }
 
@@ -202,7 +202,7 @@ namespace resource.preview
                     SetComment(__GetType(data, data.Type?.ToString()), HINT.DATA_TYPE).
                     SetUrl(file, __GetLine(data.GetLocation()), __GetPosition(data.GetLocation())).
                     SetValue(data.Initializer?.Value?.ToString()).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.PARAMETER, level, data.Identifier.ValueText);
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.PARAMETER, level, data.Identifier.ValueText);
             }
         }
 
@@ -214,7 +214,7 @@ namespace resource.preview
                     SetComment(__GetType(data, data.Declaration.Type?.ToString()), HINT.DATA_TYPE).
                     SetUrl(file, __GetLine(data.GetLocation()), __GetPosition(data.GetLocation())).
                     SetValue(data.Declaration.Variables.First()?.Initializer?.Value?.ToString()).
-                    Send(NAME.SOURCE.PREVIEW, NAME.TYPE.VARIABLE, level, data.Declaration.Variables.First()?.Identifier.ValueText);
+                    Send(NAME.SOURCE.PREVIEW, NAME.EVENT.VARIABLE, level, data.Declaration.Variables.First()?.Identifier.ValueText);
             }
         }
 
@@ -261,12 +261,12 @@ namespace resource.preview
         {
             switch (data.Severity)
             {
-                case DiagnosticSeverity.Hidden: return NAME.TYPE.DEBUG;
-                case DiagnosticSeverity.Info: return NAME.TYPE.PARAMETER;
-                case DiagnosticSeverity.Warning: return NAME.TYPE.WARNING;
-                case DiagnosticSeverity.Error: return NAME.TYPE.ERROR;
+                case DiagnosticSeverity.Hidden: return NAME.EVENT.DEBUG;
+                case DiagnosticSeverity.Info: return NAME.EVENT.PARAMETER;
+                case DiagnosticSeverity.Warning: return NAME.EVENT.WARNING;
+                case DiagnosticSeverity.Error: return NAME.EVENT.ERROR;
             }
-            return NAME.TYPE.PARAMETER;
+            return NAME.EVENT.PARAMETER;
         }
 
         private static string __GetName(SyntaxNode data, bool isFullName)
