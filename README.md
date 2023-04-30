@@ -16,7 +16,7 @@ This extension is working only with installed [MetaOutput](https://www.metaoutpu
 ---
 
 ## Description:
-Now you can look inside [CS](https://ru.wikipedia.org/wiki/C_Sharp) source files not opening it.
+Now you can look inside [CS](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)) source files not opening it.
 
 ---
 
